@@ -1,5 +1,6 @@
 # BIgIntegerManager
 
+useful to you in making idle games
 
 ```cs
 BigIntegerManager.GetUnit(10000); 
