@@ -44,14 +44,14 @@ namespace CAH.GameSystem.BigNumber
                         unit = ((char) i).ToString();
                     else
                     {
-                        var nCount = (float)n / 26; 
-                        var nextChar = _asciiA + n - 1;  
-                        var fAscii = (char) nextChar;
-                        var tAscii = (char) i;
-                        unit = $"{fAscii}{tAscii}"; 
+                        var nCount = (float)n / 26;  
+                        var nextChar = _asciiA + n - 1;   
+                        var firstAscii = (char) nextChar;
+                        var secondAscii = (char) i;
+                        unit = $"{firstAscii}{secondAscii}"; 
                     }  
                     _units.Add(unit); 
-                    _unitsMap.Add(unit, BigInteger.Pow(_unitSize, _units.Count)); 
+                    _unitsMap.Add(unit, BigInteger.Pow(_unitSize, _units.Count-1)); 
                     _idxMap.Add(unit, _units.Count-1);
                 }
             }    
@@ -105,24 +105,45 @@ namespace CAH.GameSystem.BigNumber
         /// <summary>
         /// 단위를 숫자로 변경
         /// 10A = 10000으로 리턴
+        /// 1.2A = 1200으로 리턴
+        /// 소수점 1자리만 지원함
         /// </summary>
         /// <param name="unit">단위</param>
         /// <returns></returns>
         public static BigInteger UnitToValue(string unit)
-        {
+        {       
+            if (isInitialize == false) 
+                UnitInitialize(5);
+            
+            var split = unit.Split('.');
             //소수점에 관한 연산 들어감
-            if (Regex.IsMatch(unit, "[^.]"))
-            {
-                throw new Exception("not support");
+            if (split.Length >= 2)
+            { 
+                var value = BigInteger.Parse(split[0]); 
+                var point = BigInteger.Parse((Regex.Replace(split[1], "[^0-9]", "")));
+                var unitStr = Regex.Replace(split[1], "[^A-Z]", "");
+
+                if (point == 0) return (_unitsMap[unitStr] * value);
+                else
+                {
+                    var unitValue = _unitsMap[unitStr];
+                    return (unitValue * value) + (unitValue/10) * point;
+                }
+          
             }
             //비소수 연산 들어감
             else
             {
-                var value = BigInteger.Parse((Regex.Replace(unit, "[^0-9]", "")));
+                var value = BigInteger.Parse((Regex.Replace(unit, "[^0-9]", ""))); 
                 var unitStr = Regex.Replace(unit, "[^A-Z]", ""); 
                 while (_unitsMap.ContainsKey(unitStr) == false) 
                     UnitInitialize(5); 
-                return _unitsMap[unitStr] * value;
+                var result = _unitsMap[unitStr] * value;
+
+                if (result == 0) 
+                    return int.Parse((unit));
+                else 
+                    return result;
             } 
         }
     }
