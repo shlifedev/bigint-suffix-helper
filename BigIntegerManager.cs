@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace CAH.Game.Utility
+namespace CAH.GameSystem.BigNumber
 { 
     /// <summary>
     /// BigInteger의 단위를 표현할 수 있는 클래스
@@ -12,8 +13,7 @@ namespace CAH.Game.Utility
     {      
         private static readonly BigInteger _unitSize = 1000;  
         private static Dictionary<string, BigInteger> _unitsMap = new Dictionary<string, BigInteger>();
-        private static Dictionary<string, int> _idxMap = new Dictionary<string, int>();
-
+        private static Dictionary<string, int> _idxMap = new Dictionary<string, int>(); 
         private static readonly List<string> _units = new List<string>();
         private static int _unitCapacity = 5; 
         private static readonly int _asciiA = 65;
@@ -32,6 +32,9 @@ namespace CAH.Game.Utility
             _idxMap.Add("", 0);   
             
             
+            //capacity만큼 사전생성, capacity가 1인경우 A~Z
+            //capacity가 2인경우 AA~AZ
+            //capacity 1마다 ascii 알파벳 26개 생성되는 원리
             for (int n = 0; n <= _unitCapacity; n++)
             {
                 for (int i = _asciiA; i <= _asciiZ; i++)
@@ -55,24 +58,34 @@ namespace CAH.Game.Utility
             isInitialize = true;
         }
 
-        private static (int value, int idx) GetSize(BigInteger value)
+
+        private static int GetPoint(int value)
+        {
+                return (value % 1000) / 100; 
+        }
+        
+        private static (int value, int idx, int point) GetSize(BigInteger value)
         { 
             //단위를 구하기 위한 값으로 복사
             var currentValue = value; 
             var current = (value / _unitSize) % _unitSize;
-            var idx = 0;
+            var idx = 0; 
+            var lastValue = 0;
+            // 현재 값이 999(unitSize) 이상인경우 나눠야함.
             while (currentValue > _unitSize -1)
             {
-                currentValue /= _unitSize;
-                idx += 1;
+                var predCurrentValue = currentValue / _unitSize;
+                if (predCurrentValue <= _unitSize - 1)
+                    lastValue = (int)currentValue;
+                currentValue = predCurrentValue;
+                idx += 1; 
             }
-                
-            //유닛 단위가 idx보다 적으면 새로운 단위를 새롭게 추가 
-            //단위가 무한대로 늘어나기 위한 작업
+
+            var point = GetPoint(lastValue);  
+            var originalValue = currentValue * 1000; 
             while (_units.Count <= idx) 
-                UnitInitialize(5); 
-            
-            return ((int)currentValue, idx);
+                UnitInitialize(5);  
+            return ((int)currentValue, idx, point);
         }
 
         /// <summary>
@@ -86,7 +99,7 @@ namespace CAH.Game.Utility
                 UnitInitialize(5);
             
             var sizeStruct = GetSize(value);
-            return  string.Format("{0}{1}", sizeStruct.value, _units[sizeStruct.idx]); 
+            return $"{sizeStruct.value}.{sizeStruct.point}{_units[sizeStruct.idx]}"; 
         }  
         
         /// <summary>
@@ -97,12 +110,20 @@ namespace CAH.Game.Utility
         /// <returns></returns>
         public static BigInteger UnitToValue(string unit)
         {
-
-            var value = BigInteger.Parse((Regex.Replace(unit, "[^0-9]", "")));
-            var unitStr = Regex.Replace(unit, "[^A-Z]", ""); 
-            while (_unitsMap.ContainsKey(unitStr) == false) 
-                UnitInitialize(5); 
-            return _unitsMap[unitStr] * value;
+            //소수점에 관한 연산 들어감
+            if (Regex.IsMatch(unit, "[^.]"))
+            {
+                throw new Exception("not support");
+            }
+            //비소수 연산 들어감
+            else
+            {
+                var value = BigInteger.Parse((Regex.Replace(unit, "[^0-9]", "")));
+                var unitStr = Regex.Replace(unit, "[^A-Z]", ""); 
+                while (_unitsMap.ContainsKey(unitStr) == false) 
+                    UnitInitialize(5); 
+                return _unitsMap[unitStr] * value;
+            } 
         }
     }
 }
