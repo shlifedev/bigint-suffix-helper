@@ -8,6 +8,8 @@
 ```cs
 BigIntegerManager.GetUnit(10000); 
 Result : 10A
+BigIntegerManager.GetUnit(1317); 
+Result : 1.3A
 
 
 BigIntegerManager.ToUnit("100Z")
