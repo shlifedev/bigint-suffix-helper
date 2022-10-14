@@ -6,15 +6,14 @@
 # How to use it?
 Include the [source code](https://github.com/shlifedev/BIgIntegerManager/blob/main/BigIntegerManager.cs) in your C# project and use it.
 
-```cs
-BigIntegerManager.GetUnit(10000); 
-Result : 10A
-BigIntegerManager.GetUnit(1317); 
-Result : 1.3A
+```cs 
+/* Result : 10A*/
+BigIntegerManager.GetUnit(10000);  
+/* Result : 1.3A*/
+BigIntegerManager.GetUnit(1317);  
 
-
-BigIntegerManager.ToUnit("100Z")
-Result : 100000000000000000000000000000000000000000000000000000000000000000000000000000000000 
-BigIntegerManager.ToUnit("1.5A")
-Result : 1500
+/* Result : 100000000000000000000000000000000000000000000000000000000000000000000000000000000000 */
+BigIntegerManager.ToUnit("100Z") 
+/* Result : 1500 */
+BigIntegerManager.ToUnit("1.5A") 
 ```
