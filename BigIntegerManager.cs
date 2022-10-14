@@ -34,7 +34,7 @@ namespace CAH.GameSystem.BigNumber
             
             //capacity만큼 사전생성, capacity가 1인경우 A~Z
             //capacity가 2인경우 AA~AZ
-            //capacity 1마다 ascii 알파벳 26개 생성되는 원리
+            //capacity 1마다 ascii 알파벳 26개 생성 
             for (int n = 0; n <= _unitCapacity; n++)
             {
                 for (int i = _asciiA; i <= _asciiZ; i++)
@@ -65,13 +65,11 @@ namespace CAH.GameSystem.BigNumber
         }
         
         private static (int value, int idx, int point) GetSize(BigInteger value)
-        { 
-            //단위를 구하기 위한 값으로 복사
+        {  
             var currentValue = value; 
             var current = (value / _unitSize) % _unitSize;
             var idx = 0; 
-            var lastValue = 0;
-            // 현재 값이 999(unitSize) 이상인경우 나눠야함.
+            var lastValue = 0; 
             while (currentValue > _unitSize -1)
             {
                 var predCurrentValue = currentValue / _unitSize;
@@ -89,10 +87,8 @@ namespace CAH.GameSystem.BigNumber
         }
 
         /// <summary>
-        /// 숫자를 단위로 리턴
-        /// </summary>
-        /// <param name="value">값</param>
-        /// <returns></returns>
+        /// big-int to suffixed alphabet
+        /// </summary>  
         public static string GetUnit(BigInteger value)
         {
             if (isInitialize == false) 
@@ -103,20 +99,14 @@ namespace CAH.GameSystem.BigNumber
         }  
         
         /// <summary>
-        /// 단위를 숫자로 변경
-        /// 10A = 10000으로 리턴
-        /// 1.2A = 1200으로 리턴
-        /// 소수점 1자리만 지원함
-        /// </summary>
-        /// <param name="unit">단위</param>
-        /// <returns></returns>
+        /// suffixed alphabet to suffixed alphabet
+        /// </summary>  
         public static BigInteger UnitToValue(string unit)
         {       
             if (isInitialize == false) 
                 UnitInitialize(5);
             
-            var split = unit.Split('.');
-            //소수점에 관한 연산 들어감
+            var split = unit.Split('.'); 
             if (split.Length >= 2)
             { 
                 var value = BigInteger.Parse(split[0]); 
@@ -130,8 +120,7 @@ namespace CAH.GameSystem.BigNumber
                     return (unitValue * value) + (unitValue/10) * point;
                 }
           
-            }
-            //비소수 연산 들어감
+            } 
             else
             {
                 var value = BigInteger.Parse((Regex.Replace(unit, "[^0-9]", ""))); 
