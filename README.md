@@ -1,6 +1,6 @@
 # BigIntegerManager
 
- Do you have any experience play idle style game? 
+ Do you have any experience play idle style game?   
  Yap, as the title,This source is BigInteger Helper for suffixes alphabet [a-Z] after the Big number
 
 # How to use it?
